@@ -1,0 +1,85 @@
+---
+title: "Power Analysis for Logistic Regression Models"
+author: "jlgonrod"
+date: "2024-08-22"
+output: html_document
+---
+
+# Introduction
+In this document, we will perform a power analysis for three logistic regression models. We will also adjust the sample size to account for an expected dropout rate of 10%.
+
+# Load Libraries and Data
+First, we load the necessary libraries and the dataset in Feather format.
+
+```{r}
+# Install and load the required libraries
+#install.packages("pwr")
+#install.packages("arrow")
+library(pwr)
+#library(arrow)
+
+# Load the dataset in Feather format
+data <- read.csv("data/df_clean_EII.csv")
+
+# Display the first few rows of the dataset for verification
+head(data)
+```
+
+# Initial Parameters
+Next, we define the parameters for the power analysis:
+
+```{r}
+# Define parameters
+f2 <- 0.15  # Medium effect size
+u <- ncol(data) - 1  # Number of predictors
+power_level <- 0.8  # Desired power level
+dropout_rate <- 0.10  # Dropout rate of 10%
+```
+
+#Power Analysis and Sample Size Adjustment
+We perform the power analysis for each model and adjust the sample size to account for the dropout rate.
+
+```{r}
+# Model 1: res_clin_26
+sample_size_model <- pwr.f2.test(u = u, f2 = f2, sig.level = 0.05, power = power_level)$v
+adjusted_sample_size_model <- sample_size_model / (1 - dropout_rate)
+
+n_model_1 <- 227
+n_model_2 <- 227
+n_model_3 <- 227
+
+n_model_crohn_vedo_res52 <- 45
+n_model_crohn_vedo_rem52 <- 45
+
+n_model_ulce_vedo_res52 <- 47
+n_model_ulce_vedo_rem52 <- 47
+
+n_model_crohn_uste_res52 <- 124
+n_model_crohn_uste_rem52 <- 124
+
+n_model_ulce_uste_res52 <- 11
+n_model_ulce_uste_rem52 <- 11
+
+# Print the results
+cat("Model with", u, "features:\n")
+cat("Initial sample size required:", ceiling(sample_size_model), "\n")
+cat("Adjusted sample size required (10% dropout):", ceiling(adjusted_sample_size_model), "\n\n")
+
+cat("N model res_clin_26(training 75%):", ceiling(n_model_1*0.75), "\n")
+cat("N model res_clin_52(training 75%):", ceiling(n_model_2*0.75), "\n")
+cat("N model rem_clin_52(training 75%):", ceiling(n_model_3*0.75), "\n")
+
+cat("N model Crohn's disease + VEDO res_clin_52(training 75%):", ceiling(n_model_crohn_vedo_res52*0.75), "\n")
+cat("N model Crohn's disease + VEDO rem_clin_52(training 75%):", ceiling(n_model_crohn_vedo_rem52*0.75), "\n")
+
+cat("N model Ulceralive Colitis + VEDO res_clin_52(training 75%):", ceiling(n_model_ulce_vedo_res52*0.75), "\n")
+cat("N model Ulceralive Colitis + VEDO rem_clin_52(training 75%):", ceiling(n_model_ulce_vedo_rem52*0.75), "\n")
+
+cat("N model Crohn's disease + USTE res_clin_52(training 75%):", ceiling(n_model_crohn_uste_res52*0.75), "\n")
+cat("N model Crohn's disease + USTE rem_clin_52(training 75%):", ceiling(n_model_crohn_uste_rem52*0.75), "\n")
+
+cat("N model Ulceralive Colitis + USTE res_clin_52(training 75%):", ceiling(n_model_ulce_uste_res52*0.75), "\n")
+cat("N model Ulceralive Colitis + USTE rem_clin_52(training 75%):", ceiling(n_model_ulce_uste_rem52*0.75), "\n")
+```
+
+``
